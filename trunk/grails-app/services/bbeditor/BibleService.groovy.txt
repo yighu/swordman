@@ -1,0 +1,31 @@
+package bbeditor
+@Grab(group = 'org.codehaus.groovy.modules.http-builder', module = 'http-builder', version = '0.5.1')
+import groovyx.net.http.*
+import static groovyx.net.http.ContentType.*
+import static groovyx.net.http.Method.*
+
+class BibleService {
+
+  boolean transactional = false
+  def call_dyurl(org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap params, String url) {
+    def result
+    def http = new HTTPBuilder(url)
+    http.request(GET, JSON) {
+      //uri.path = '/kbwc-grid/openurl/resolve'
+      uri.path = '/webservices/kb/openurl/resolve'
+      //uri.query = ['rft.title': 'nature']
+      params.put("rfr_id","info/sid:oclc.org/WCL");
+        params.put("rft",null)
+      uri.query = params
+      headers.'User-Agent' = 'Mozilla/5.0 Ubuntu/8.10 Firefox/3.0.4'
+      response.success = {resp, json ->
+        result = json
+      }
+      response.failure = {resp ->
+        result = "failed";
+      }
+    }
+    result
+  }
+}
+
